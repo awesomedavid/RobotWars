@@ -1,0 +1,53 @@
+import java.util.ArrayList;
+import java.util.Objects;
+
+import org.newdawn.slick.Image;
+
+public class GameObject {
+	protected ArrayList<GameObject> GameObjects = new ArrayList<>();
+	protected float x,y;
+	protected Image im;
+	GameObject(float x, float y, Image im){
+		this.x = x;
+		this.y = y;
+		this.im = im;
+	}
+	protected boolean collisionRight(float leftX,float rightX,float topY, float botY) {
+		float rX = x + im.getWidth();	
+		float bY = y + im.getHeight();
+		float lX = x;
+		float tY = y;				
+		if(rX > leftX && lX < rightX) {
+			if(bY > topY && tY < botY) {
+				return true;
+			}
+		}
+		return false;
+	}
+	protected boolean collisionLeft(float leftX,float rightX,float topY, float botY) {		
+		float rX = x + im.getWidth();	
+		float bY = y + im.getHeight();
+		float lX = x;
+		float tY = y;				
+		if(rX < leftX && lX > rightX) {
+			if(bY > topY && tY < botY) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public float getX() {
+		return x;
+	}
+	public void setX(float x) {
+		this.x = x;
+	}
+	public float getY() {
+		return y;
+	}
+	public void setY(float y) {
+		this.y = y;
+	}
+	
+}

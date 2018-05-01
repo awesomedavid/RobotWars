@@ -1,0 +1,89 @@
+import java.util.ArrayList;
+
+import org.newdawn.slick.Color;
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
+
+public class Rooms {
+	public ArrayList<Enemies> enemy = new ArrayList<>();
+	public ArrayList<Objects> objects = new ArrayList<>();
+	int x, y, width, height;
+	int thing,thing1,thing2;
+	Color c;
+	Image skel,heart,door_t,door_r,door_b,door_l;
+	public Rooms(int x, int y, int width, int height) {
+		loadImages();
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
+		thing = (int)(Math.random()*255);
+		thing1 = (int)(Math.random()*255);
+		thing2 = (int)(Math.random()*255);
+		c= new Color(thing1,thing,thing2);		
+	}
+public void loadImages() {
+	try {
+		heart = new Image("data/ROCK.png");
+		skel = new Image("data/skel.png");
+		door_t = new Image("data/DOOR_T.png");
+		door_r = new Image("data/DOOR_R.png");
+		door_b = new Image("data/DOOR_B.png");
+		door_l = new Image("data/DOOR_L.png");
+	} catch (SlickException e) {
+		e.printStackTrace();
+	}
+	door_l = door_l.getScaledCopy(75,50);
+	heart = heart.getScaledCopy(50,50);
+	skel = skel.getScaledCopy(50,50);
+}
+	public void draw(Graphics g) {
+		g.setColor(c);
+		g.fillRect(0, 0, Engine.width, Engine.height);
+		for (int i = 0; i < enemy.size(); i++) {
+			enemy.get(i).draw(g);
+		}
+		for (int i = 0; i < objects.size(); i++) {
+			objects.get(i).draw(g);
+		}
+	}
+
+	public void update(GameContainer gc) {	
+		for (int i = 0; i < enemy.size(); i++) {
+			if(enemy.get(i).getCurH()<=0) {
+				enemy.remove(i);			
+				objects.add(new Heart(100,100,heart));
+				Engine.GameObjects.add(new Heart(100,100,heart));
+			}else {
+			enemy.get(i).update(gc);
+			}
+		}
+		
+		for (int i = 0; i < objects.size(); i++) {
+			if(!(objects.get(i).isAlive)) {
+				objects.remove(i);
+			}else {
+			objects.get(i).update(gc);
+			}
+		}
+		
+	}
+}
+class basicRoom extends Rooms{
+	Doors left,right,top,bot;
+	basicRoom(int x, int y, int width, int height){
+		super(x,y,width,height);
+		left = new Doors(0,Engine.height/2-(door_l.getHeight()/2),door_l);
+		enemy.add(new BasicE1(600, 600,skel));
+		objects.add(left);
+		
+	}
+}
+class upgradeRoom extends Rooms{
+	upgradeRoom(int x, int y, int width, int height){
+		super(x,y,width,height);
+		
+	}
+}

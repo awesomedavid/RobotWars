@@ -1,0 +1,35 @@
+import org.newdawn.slick.Color;
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
+
+abstract class Projectile
+{
+	protected float x,y,w,h,xSpeed,ySpeed,damage;
+  Projectile(float x, float y, float w, float h, float xSpeed, float ySpeed,float damage)
+  {
+	 this.x=x;
+	 this.y=y;
+	 this.w=w;
+	 this.h=h;
+    this.xSpeed = xSpeed;
+    this.ySpeed = ySpeed;
+    this.damage = damage;
+  }
+  abstract void update(GameContainer gc);
+  abstract void draw(Graphics g);
+}
+class PlayerProjectile extends Projectile
+{
+	PlayerProjectile(float x, float y, float w, float h, float xSpeed, float ySpeed, float damage)
+	  {
+		super(x,y,w,h,xSpeed,ySpeed,damage);    
+	  }
+	public void draw(Graphics g) {
+	g.setColor(new Color(255,100,100));
+	g.fillOval(x,y,w,h);
+	}
+	public void update(GameContainer gc) {
+	x+=xSpeed;
+	y+=ySpeed;
+	}	
+}

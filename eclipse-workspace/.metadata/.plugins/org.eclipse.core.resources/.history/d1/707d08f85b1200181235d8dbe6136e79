@@ -1,0 +1,95 @@
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.newdawn.slick.AppGameContainer;
+import org.newdawn.slick.BasicGame;
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
+import org.newdawn.slick.Input;
+import org.newdawn.slick.SlickException;
+//David Morey
+
+public class Engine extends BasicGame {
+	public float pausetimer = 120;
+	public String gamestate = "title";
+	public static int width = 1000;
+	public static int height = 1000;
+	public static Player p;
+	public static Rooms rooms[][] = new Rooms[11][11];
+	Image wizard,title;
+
+	public Engine(String gamename) {
+		super(gamename);
+
+	}
+
+	@Override
+	public void init(GameContainer gc) throws SlickException {
+		try {
+			title = new Image("data/TITLE.png");
+			wizard = new Image("data/WIZARD.png");
+		} catch (SlickException e) {
+			e.printStackTrace();
+		}
+		if (gamestate != "title") {		
+			wizard = wizard.getScaledCopy(50, 50);
+			p = new Player(width / 2, height / 2, wizard);
+			for (int i = 0; i < rooms.length; i++) {
+				for (int j = 0; j < rooms.length; j++) {
+					rooms[i][j] = new Rooms(0, 0, width, height);
+				}
+			}
+			p.moveRoom(6, 6);
+		}
+	}
+
+	@Override
+	public void update(GameContainer gc, int i) throws SlickException {
+		if(pausetimer >0) {
+			pausetimer--;
+		}
+		Input input = gc.getInput();
+		if (gamestate != "title" && gamestate != "pause") {
+			rooms[p.getRoomX()][p.getRoomY()].update(gc);
+			p.update(gc);
+			if(input.isKeyDown(Input.KEY_P) && pausetimer <=0) {
+				gamestate = "pause";
+				pausetimer = 120;
+			}
+		}else {
+			if(input.isKeyDown(Input.KEY_SPACE)) {
+				gamestate = "game";
+				init(gc);
+			}
+		}
+		if(gamestate == "pause") {
+			if(input.isKeyDown(Input.KEY_P) && pausetimer <=0) {
+				gamestate = "game";
+				pausetimer = 120;
+			}
+		}
+	}
+
+	@Override
+	public void render(GameContainer gc, Graphics g) throws SlickException {
+		if (gamestate != "title") {
+			rooms[p.getRoomX()][p.getRoomY()].draw(g);
+			p.draw(g);
+		}else{
+			g.drawImage(title,0,0);
+		}
+	}
+
+	public static void main(String[] args) {
+		try {
+			AppGameContainer appgc;
+			appgc = new AppGameContainer(new Engine("Detainment of David"));
+			appgc.setShowFPS(false);
+			appgc.setDisplayMode(width, height, false);
+			appgc.start();
+		} catch (SlickException ex) {
+			Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+}

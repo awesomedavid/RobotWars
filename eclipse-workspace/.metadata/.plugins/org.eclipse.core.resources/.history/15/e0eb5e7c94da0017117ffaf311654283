@@ -1,0 +1,92 @@
+import org.newdawn.slick.Graphics;
+
+public class Engine {
+	private int generations;
+	private float timer;
+	public static Cell[][] cells = new Cell[v.MAP_WIDTH][v.MAP_HEIGHT];
+
+	Engine() {
+		timer = 0;
+		
+		generations = 0;
+	}
+
+	public void create() {
+		for (int i = 0; i < v.MAP_WIDTH; i++) {
+			for (int j = 0; j < v.MAP_HEIGHT; j++) {
+				cells[i][j] = new Cell(i, j);
+			}
+		}
+	}
+
+	public void draw(Graphics g) {
+		for (int i = 0; i < v.MAP_WIDTH; i++) {
+			for (int j = 0; j < v.MAP_HEIGHT; j++) {
+				cells[i][j].draw(g);
+			}
+		}
+		g.drawString("Generations : " + generations, 100, 600);
+	}
+
+	public boolean inBounds(int x, int y) {
+		if (x >= 0 && x < v.MAP_WIDTH && y >= 0 && y < v.MAP_HEIGHT)
+			return true;
+		else
+			return false;
+	}
+
+	public void update() {
+		timer++;
+		if (timer % 35 == 0) {
+			nAlive();
+			plan();
+			move();
+
+		}
+	}
+
+	public void plan() {
+		for (int i = 0; i < v.MAP_WIDTH; i++) {
+			for (int j = 0; j < v.MAP_HEIGHT; j++) {
+				if (cells[i][j].getCid() == 1 && cells[i][j].getNumAlive() < 2) {
+					cells[i][j].setFid(0);
+				} else if (cells[i][j].getCid() == 1
+						&& (cells[i][j].getNumAlive() == 2 || cells[i][j].getNumAlive() == 3)) {
+					cells[i][j].setFid(1);
+				} else if (cells[i][j].getCid() == 1 && cells[i][j].getNumAlive() > 3) {
+					cells[i][j].setFid(0);
+				} else if (cells[i][j].getCid() == 0 && cells[i][j].getNumAlive() == 3) {
+					cells[i][j].setFid(1);
+				}
+			}
+		}
+		generations++;
+	}
+
+	public void move() {
+		for (int i = 0; i < v.MAP_WIDTH; i++) {
+			for (int j = 0; j < v.MAP_HEIGHT; j++) {
+				cells[i][j].setCid(cells[i][j].getFid());
+				cells[i][j].setNumAlive(0);
+			}
+		}
+	}
+
+	public void nAlive() {
+		for (int i = 0; i < v.MAP_WIDTH; i++) {
+			for (int j = 0; j < v.MAP_HEIGHT; j++) {
+				if (cells[i][j].getCid() == 1) {
+					cells[i][j].setNumAlive(cells[i][j].getNumAlive() - 1);
+					for (int a = -1; a < 2; a++) {
+						for (int b = -1; b < 2; b++) {
+							if (inBounds(i + a, j + b)) {
+								cells[i + a][j + b].setNumAlive(cells[i + a][j + b].getNumAlive() + 1);
+
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,9 @@
+//David Morey
+public class v {
+	public static int cell_size = 1;
+	public static int MAP_WIDTH = 600;
+	public static int MAP_HEIGHT = 600;
+	public v() {
+	}
+	
+}

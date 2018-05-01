@@ -1,0 +1,34 @@
+import org.newdawn.slick.Color;
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
+public abstract class Objects extends GameObject {
+	boolean isAlive;
+	Objects(float x, float y, Image im){
+		super(x,y,im);
+		isAlive = true;
+	}
+	abstract void update(GameContainer gc);
+	abstract void draw(Graphics g);
+	public boolean isAlive() {
+		return isAlive;
+	}
+	public void setAlive(boolean isAlive) {
+		this.isAlive = isAlive;
+	}
+	
+}
+class Heart extends Objects{
+	Heart(float x, float y, Image im){
+		super(x,y,im);
+	}
+	public void update(GameContainer gc) {
+		if(collisionRight(Engine.p.getX(),Engine.p.getX()+50,Engine.p.getY(),Engine.p.getY()+50)) {
+			Engine.p.setCurH(Engine.p.getCurH()+10);
+			isAlive = false;
+		}
+	}
+	public void draw(Graphics g) {
+		g.drawImage(im, x, y);
+	}
+}

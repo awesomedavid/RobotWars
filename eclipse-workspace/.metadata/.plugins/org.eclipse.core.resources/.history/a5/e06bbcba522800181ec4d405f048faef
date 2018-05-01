@@ -1,0 +1,187 @@
+import java.util.ArrayList;
+
+import org.newdawn.slick.Color;
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
+
+abstract public class Rooms {
+	public ArrayList<Enemies> enemy = new ArrayList<>();
+	public ArrayList<Objects> objects = new ArrayList<>();
+	int x, y, width, height;
+	int thing, thing1, thing2;
+	Color c;
+
+	public Rooms(int x, int y, int width, int height) {
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
+		thing = (int) (Math.random() * 255);
+		thing1 = (int) (Math.random() * 255);
+		thing2 = (int) (Math.random() * 255);
+		c = new Color(thing1, thing, thing2);
+	}
+
+	public void update(GameContainer gc) {
+	}
+
+	public void draw(Graphics g) {
+	}
+
+	public boolean inBounds(int x, int y) {
+		if (x > 0 && x < 10 && y > 0 && y < 10) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+}
+
+class basicRoom extends Rooms {
+	int num = 1;
+
+	basicRoom(int x, int y, int width, int height) {
+		super(x, y, width, height);
+		enemy.add(new BasicE1(600, 600, Engine.skel));
+		// rW.rotate(90);
+	}
+
+	public void draw(Graphics g) {
+		g.drawImage(Engine.wall_t, 0, 0);
+		g.drawImage(Engine.wall_l, 0, 0);
+		g.drawImage(Engine.wall_r, 775, 0);
+		g.drawImage(Engine.wall_b, 0, 775);
+		g.setColor(c);
+		g.fillRect(75, 75, Engine.width - 150, Engine.height - 150);
+		for (int i = 0; i < enemy.size(); i++) {
+			enemy.get(i).draw(g);
+		}
+		for (int i = 0; i < objects.size(); i++) {
+			objects.get(i).draw(g);
+		}
+	}
+
+	public void update(GameContainer gc) {
+		if (num == 1) {
+			Image l, r, t, b;
+			for (int i = 0; i < Engine.levels.length; i++) {
+				for (int j = 0; j < Engine.levels.length; i++) {
+//					if (Engine.levels[i - 1][j].equals("2")) {
+//						//left
+//
+//					}
+//					if (Engine.levels[i][j-1].equals("2")) {
+//						//top
+//
+//					}
+//					if (Engine.levels[i][j+1].equals("2")) {
+//						//bot
+//
+//					}
+//					if (Engine.levels[i+1][j].equals("2")) {
+//						//right
+//
+//					}
+				}
+			}
+			if (inBounds(Engine.p.getRoomX() - 1, Engine.p.getRoomY())) {
+				objects.add(new Doors(0, Engine.height / 2 - (Engine.door_l.getHeight() / 2), Engine.door_l));
+			}
+			// right
+			if (inBounds(Engine.p.getRoomX() + 1, Engine.p.getRoomY())) {
+				objects.add(new Doors(Engine.width - Engine.door_r.getWidth(),
+						Engine.height / 2 - (Engine.door_r.getHeight() / 2), Engine.door_r));
+			}
+			// top
+			if (inBounds(Engine.p.getRoomX(), Engine.p.getRoomY() - 1)) {
+				objects.add(new Doors(Engine.width / 2 - (Engine.door_t.getWidth() / 2), 0, Engine.door_t));
+			}
+			// bot
+			if (inBounds(Engine.p.getRoomX(), Engine.p.getRoomY() + 1)) {
+				objects.add(new Doors(Engine.width / 2 - (Engine.door_b.getWidth() / 2),
+						Engine.width - Engine.door_b.getWidth(), Engine.door_b));
+			}
+			num = 0;
+		}
+		for (int i = 0; i < enemy.size(); i++) {
+			if (enemy.get(i).getCurH() <= 0) {
+				objects.add(new Heart(enemy.get(i).getX(), enemy.get(i).getY(), Engine.heart));
+				enemy.remove(i);
+			} else {
+				enemy.get(i).update(gc);
+			}
+		}
+		for (int i = 0; i < objects.size(); i++) {
+			if (!(objects.get(i).isAlive)) {
+				objects.remove(i);
+			} else {
+				objects.get(i).update(gc);
+			}
+		}
+	}
+}
+
+class upgradeRoom extends Rooms {
+	upgradeRoom(int x, int y, int width, int height) {
+		super(x, y, width, height);
+	}
+
+	public void draw(Graphics g) {
+		g.setColor(new Color(255, 255, 0));
+		g.fillRect(75, 75, Engine.width - 150, Engine.height - 150);
+		for (int i = 0; i < objects.size(); i++) {
+			objects.get(i).draw(g);
+		}
+	}
+
+	public void update(GameContainer gc) {
+		for (int i = 0; i < objects.size(); i++) {
+			if (!(objects.get(i).isAlive)) {
+				objects.remove(i);
+			} else {
+				objects.get(i).update(gc);
+			}
+		}
+	}
+
+}
+
+class bossRoom extends Rooms {
+	bossRoom(int x, int y, int width, int height) {
+		super(x, y, width, height);
+		enemy.add(new Boss1(300, 300, Engine.bigG));
+	}
+
+	public void draw(Graphics g) {
+		g.setColor(c);
+		g.fillRect(75, 75, Engine.width - 150, Engine.height - 150);
+		for (int i = 0; i < enemy.size(); i++) {
+			enemy.get(i).draw(g);
+		}
+		for (int i = 0; i < objects.size(); i++) {
+			objects.get(i).draw(g);
+		}
+	}
+
+	public void update(GameContainer gc) {
+		for (int i = 0; i < enemy.size(); i++) {
+			if (enemy.get(i).getCurH() <= 0) {
+				objects.add(new ladder(enemy.get(i).getX(), enemy.get(i).getY(), Engine.rock));
+				enemy.remove(i);
+			} else {
+				enemy.get(i).update(gc);
+			}
+		}
+		for (int i = 0; i < objects.size(); i++) {
+			if (!(objects.get(i).isAlive)) {
+				objects.remove(i);
+			} else {
+				objects.get(i).update(gc);
+			}
+		}
+
+	}
+
+}

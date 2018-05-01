@@ -1,0 +1,65 @@
+import org.newdawn.slick.Color;
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
+
+abstract class Projectile {
+	protected float x, y, w, h,damage;
+	double  xSpeed, ySpeed;
+	Projectile(float x, float y, float w, float h, double xSpeed, double ySpeed, float damage) {
+		this.x = x;
+		this.y = y;
+		this.w = w;
+		this.h = h;
+		this.xSpeed = xSpeed;
+		this.ySpeed = ySpeed;
+		this.damage = damage;		
+	}
+	abstract void update(GameContainer gc);
+	abstract void draw(Graphics g);
+	public float getX() {
+		return x;
+	}
+	public void setX(float x) {
+		this.x = x;
+	}
+	public float getY() {
+		return y;
+	}
+	public void setY(float y) {
+		this.y = y;
+	}
+	
+	
+}
+
+class PlayerProjectile extends Projectile {
+	public Image fireball;
+	PlayerProjectile(float x, float y, float w, float h, double xSpeed, double ySpeed, float damage) {
+		super(x, y, w, h, xSpeed, ySpeed, damage);
+		try {
+			fireball = new Image("data/FIREBALL.png");
+		} catch (SlickException e) {
+			e.printStackTrace();
+		}
+		fireball = fireball.getScaledCopy(20,20);
+		if(Engine.p.getDirection() == "up") {
+			fireball.rotate(90);
+		}else if(Engine.p.getDirection() == "right") {
+			fireball.rotate(180);
+		}else if(Engine.p.getDirection() == "down") {
+			fireball.rotate(270);
+		}
+	}
+
+	public void draw(Graphics g) {
+		g.drawImage(fireball, x-fireball.getWidth()/2, y-fireball.getHeight()/2);
+	}
+
+	public void update(GameContainer gc) {
+		x += xSpeed;
+		y += ySpeed;
+	}
+	
+}

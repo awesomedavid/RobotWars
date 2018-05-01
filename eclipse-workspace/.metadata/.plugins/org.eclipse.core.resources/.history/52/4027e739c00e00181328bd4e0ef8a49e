@@ -1,0 +1,53 @@
+import org.newdawn.slick.Color;
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
+
+abstract class Projectile {
+	protected float x, y, w, h, xSpeed, ySpeed, damage;
+	public Image fireball;
+	Projectile(float x, float y, float w, float h, float xSpeed, float ySpeed, float damage) {
+		this.x = x;
+		this.y = y;
+		this.w = w;
+		this.h = h;
+		this.xSpeed = xSpeed;
+		this.ySpeed = ySpeed;
+		this.damage = damage;
+		try {
+			fireball = new Image("data/FIREBALL.png");
+		} catch (SlickException e) {
+			e.printStackTrace();
+		}
+		fireball = fireball.getScaledCopy(20,20);
+		
+	}
+	abstract void update(GameContainer gc);
+	abstract void draw(Graphics g);
+	
+	
+}
+
+class PlayerProjectile extends Projectile {
+	PlayerProjectile(float x, float y, float w, float h, float xSpeed, float ySpeed, float damage) {
+		super(x, y, w, h, xSpeed, ySpeed, damage);
+	}
+
+	public void draw(Graphics g) {
+		g.drawImage(fireball, x-fireball.getWidth()/2, y-fireball.getHeight()/2);
+	}
+
+	public void update(GameContainer gc) {
+		x += xSpeed;
+		y += ySpeed;
+	}
+	public Image getProj() {
+		return fireball;
+	}
+
+	public void setProj(Image fireball) {
+		this.fireball = fireball;
+	}
+	
+}

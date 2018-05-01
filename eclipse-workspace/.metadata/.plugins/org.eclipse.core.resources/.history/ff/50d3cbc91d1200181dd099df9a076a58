@@ -1,0 +1,39 @@
+import java.util.ArrayList;
+
+import org.newdawn.slick.Color;
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
+
+public class Rooms {
+	public ArrayList<Enemies> enemy = new ArrayList<>();
+	int x, y, width, height;
+	int thing,thing1,thing2;
+	Color c;
+
+	public Rooms(int x, int y, int width, int height) {
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
+		enemy.add(new BasicE1(300, 300));
+		thing = (int)(Math.random()*255);
+		thing1 = (int)(Math.random()*255);
+		thing2 = (int)(Math.random()*255);
+		c= new Color(thing1,thing,thing2);
+	}
+
+	public void draw(Graphics g) {
+		g.setColor(c);
+		g.fillRect(0, 0, Engine.width, Engine.height);
+		for (int i = 0; i < enemy.size(); i++) {
+			enemy.get(i).draw(g);
+		}
+		System.out.println(thing);
+	}
+
+	public void update(GameContainer gc) {
+		for (int i = 0; i < enemy.size(); i++) {
+			enemy.get(i).update(gc);
+		}
+	}
+}

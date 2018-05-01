@@ -1,0 +1,16 @@
+import org.newdawn.slick.Color;
+import org.newdawn.slick.Graphics;
+
+public class Rooms {
+	int x,y,width,height;
+	public Rooms(int x, int y,int width,int height) {
+		this.x=x;
+		this.y=y;
+		this.width=width;
+		this.height=height;
+	}
+	public void draws(Graphics g){
+		g.setColor(new Color(50,255,10));
+		g.fillRect(0, 0, Engine.width, Engine.height);		
+	}	
+}

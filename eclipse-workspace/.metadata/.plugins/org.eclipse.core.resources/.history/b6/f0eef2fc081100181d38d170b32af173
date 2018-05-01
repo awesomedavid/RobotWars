@@ -1,0 +1,23 @@
+import java.util.ArrayList;
+
+import org.newdawn.slick.Color;
+import org.newdawn.slick.Graphics;
+
+public class Rooms {
+	public ArrayList<Enemies> enemy = new ArrayList<>();
+	int x,y,width,height;
+	public Rooms(int x, int y,int width,int height) {
+		this.x=x;
+		this.y=y;
+		this.width=width;
+		this.height=height;
+		enemy.add(new BasicE1(100,100));
+	}
+	public void draw(Graphics g){
+		g.setColor(new Color(0,0,0));
+		g.fillRect(0, 0, Engine.width, Engine.height);
+		for(int i =0; i <enemy.size();i++) {
+		enemy.get(i).draw(g);	
+		}
+	}	
+}

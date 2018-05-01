@@ -1,0 +1,137 @@
+import java.util.ArrayList;
+
+import org.newdawn.slick.Color;
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Input;
+
+public class Player {
+	public String direction;
+	private ArrayList<PlayerProjectile> projectiles = new ArrayList<>();
+	private float x,y;
+	private int roomX,roomY;
+	private int size;
+	float proW,proH,proDam,shotTimer,shotDelay;
+	double proxSpeed,proySpeed;
+	
+	public Player(float x, float y) {
+		this.x = x;
+		this.y = y;
+		this.size = 50;
+		proW = 4;
+		proH = 4;
+		shotTimer = 0;
+		shotDelay = 200;
+		proxSpeed=.5;
+		proySpeed=.5;
+	}
+	
+	public void draw(Graphics g) {
+		g.setColor(new Color(100, 100, 100));
+		g.fillOval(x, y, size, size);
+		for (int i = 0; i < projectiles.size(); i++) {
+			projectiles.get(i).draw(g);
+		}
+	}
+	
+	public void update(GameContainer gc) {
+		keys(gc);
+		for (int i = 0; i < projectiles.size(); i++) {
+			projectiles.get(i).update(gc);
+			if(projectiles.get(i).getX()<0 || projectiles.get(i).getX()>Engine.width || projectiles.get(i).getY()<0 || projectiles.get(i).getY()>Engine.height) {
+				projectiles.remove(i);
+			}
+			
+		}
+		if(shotTimer>0) {
+			shotTimer--;
+		}
+		borders();
+	}
+	public void borders() {
+	 if(x<0)
+		 x = 0;
+	 if(x+size > Engine.width)
+		 x=Engine.width-size;
+	 if(y<0)
+		 y=0;
+	 if(y+size>Engine.height)
+		 y=Engine.height-size;
+	}
+	public void keys(GameContainer gc) {
+		Input input = gc.getInput();
+		if (input.isKeyDown(Input.KEY_W)) {
+			y -= .4;
+		}
+		if (input.isKeyDown(Input.KEY_S)) {
+			y += .4;
+		}
+		if (input.isKeyDown(Input.KEY_A)) {
+			x -= .4;
+		}
+		if (input.isKeyDown(Input.KEY_D)) {
+			x += .4;
+		}
+if(input.isKeyDown(Input.KEY_T)){
+
+}
+		if (input.isKeyDown(Input.KEY_UP) && shotTimer<=0) {
+			direction = "up";
+			projectiles.add(new PlayerProjectile(x+size/2,y+size/2,proW,proH,proxSpeed*0,proySpeed*-1,proDam));			
+			shotTimer = shotDelay;
+		}
+		if (input.isKeyDown(Input.KEY_DOWN)&& shotTimer<=0) {
+			direction = "down";
+			projectiles.add(new PlayerProjectile(x+size/2,y+size/2,proW,proH,proxSpeed*0,proySpeed,proDam));		
+			shotTimer = shotDelay;
+		}
+		if (input.isKeyDown(Input.KEY_LEFT)&& shotTimer<=0) {
+			direction = "left";
+			projectiles.add(new PlayerProjectile(x+size/2,y+size/2,proW,proH,proxSpeed*-1,proySpeed*0,proDam));		
+			shotTimer = shotDelay;
+		}
+		if (input.isKeyDown(Input.KEY_RIGHT)&& shotTimer<=0) {
+			direction = "right";
+			projectiles.add(new PlayerProjectile(x+size/2,y+size/2,proW,proH,proxSpeed,proySpeed*0,proDam));	
+			shotTimer = shotDelay;
+		}
+	}
+
+	public float getX() {
+		return x;
+	}
+
+	public void setX(float xPos) {
+		this.x = xPos;
+	}
+
+	public float getY() {
+		return y;
+	}
+
+	public void setY(float yPos) {
+		this.y = yPos;
+	}
+	
+	public void moveRoom(int x, int y) {
+		roomX += x;
+		roomY += y;
+	}
+	
+	public int getRoomX() {
+		return roomX;
+	}
+	
+	public int getRoomY() {
+		return roomY;
+	}
+
+	public String getDirection() {
+		return direction;
+	}
+
+	public void setDirection(String direction) {
+		this.direction = direction;
+	}
+
+}

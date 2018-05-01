@@ -1,0 +1,69 @@
+import org.newdawn.slick.Color;
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
+public abstract class Objects extends GameObject {
+	boolean isAlive;
+	Objects(float x, float y, Image im){
+		super(x,y,im);
+		isAlive = true;
+	}
+	abstract void update(GameContainer gc);
+	abstract void draw(Graphics g);
+	public boolean isAlive() {
+		return isAlive;
+	}
+	public void setAlive(boolean isAlive) {
+		this.isAlive = isAlive;
+	}
+	
+}
+class Heart extends Objects{
+	
+	Heart(float x, float y, Image im){
+		super(x,y,im);
+	}
+	public void update(GameContainer gc) {
+		if(collision(Engine.p.getX(),Engine.p.getX()+50,Engine.p.getY(),Engine.p.getY()+50)) {
+			Engine.p.setCurH(Engine.p.getCurH()+10);
+			isAlive = false;
+		}
+	}
+	public void draw(Graphics g) {
+		g.drawImage(im, x, y);
+	}
+}
+class upgrades extends Objects{
+	upgrades(float x, float y, Image im){
+		super(x,y,im);
+	}
+	public void update(GameContainer gc) {
+	
+	}
+	public void draw(Graphics g) {
+
+	}
+}
+class Doors extends Objects{
+	
+	Doors(float x, float y, Image im){
+		super(x,y,im);
+	}
+	public void update(GameContainer gc) {
+		if(collision(Engine.p.getX(),Engine.p.getX()+50,Engine.p.getY(),Engine.p.getY()+50)) {
+			if(Engine.p.getDirectionM() == "up") {
+				Engine.p.setY(Engine.height-76);
+			}else if(Engine.p.getDirectionM() == "right") {
+				Engine.p.setX(76);
+			}else if(Engine.p.getDirectionM() == "down") {
+				Engine.p.setY(76);
+			}else {
+				Engine.p.setX(Engine.width-75);
+			}
+		}
+	}
+	public void draw(Graphics g) {
+		g.drawImage(im, x, y);
+	}
+}
+

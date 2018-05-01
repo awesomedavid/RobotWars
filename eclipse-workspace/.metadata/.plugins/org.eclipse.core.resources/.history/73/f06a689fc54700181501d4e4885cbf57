@@ -1,0 +1,306 @@
+import java.awt.geom.Area;
+import java.util.ArrayList;
+
+import org.newdawn.slick.Color;
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
+import org.newdawn.slick.Input;
+import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.Shape;
+
+public class Player extends GameObject {
+	private final double ACCEL = .003f;
+	public String direction, directionM;
+	public ArrayList<PlayerProjectile> projectiles = new ArrayList<>();
+	public ArrayList<Upgrades> upgrades = new ArrayList<>();
+	private int roomX, roomY;
+	private int size;
+	private float proW, proH, proDam, shotTimer, shotDelay, curH, maxH;
+	private double proxSpeed, proySpeed;
+	private double xSpeed, ySpeed, speedM;
+	private double projR;
+	private int ranP;
+	private double shield;
+	private int originX = 600;
+	private int originY = 100;
+
+	public Player(float x, float y, Image im) {
+		super(x, y, im);
+		maxH = 5;
+		curH = maxH;
+		size = 50;
+		proW = 4;
+		proH = 4;
+		shotTimer = 0;
+		shotDelay = 200;
+		proxSpeed = .35;
+		proySpeed = .35;
+		xSpeed = 0;
+		speedM = .3;
+		ySpeed = 0;
+		projR = 0;
+		ranP = 0;
+		shield = 0;
+	}
+
+	public void draw(Graphics g) {
+		if (curH > 0) {
+			if (shield > 0) {
+				g.drawImage(Engine.bigG.getScaledCopy(50, 50), x, y);
+			} else {
+				g.drawImage(im, x, y);
+			}
+		}
+		for (int i = 0; i < projectiles.size(); i++) {
+			projectiles.get(i).draw(g);
+		}
+		healthbar(g);
+		miniMap(g);
+	}
+
+	public void update(GameContainer gc) {
+		if (shield > 0) {
+			shield = shield - .05;
+		}
+		ranP = (int) (Math.random() * upgrades.size());
+		x += xSpeed;
+		y += ySpeed;
+		if (curH > 0) {
+			keys(gc);
+			for (int i = 0; i < projectiles.size(); i++) {
+				projectiles.get(i).update(gc);
+				if (projectiles.get(i).getX() < 75 || projectiles.get(i).getX() > Engine.width - 75
+						|| projectiles.get(i).getY() < 75 || projectiles.get(i).getY() > Engine.height - 75
+						|| projectiles.get(i).getRange() <= 0 || !(projectiles.get(i).isAlive)) {
+					projectiles.remove(i);
+				}
+			}
+			if (shotTimer > 0) {
+				shotTimer--;
+			}
+			borders();
+		}
+		for (int i = 0; i < Engine.rooms[roomX][roomY].enemy.size(); i++) {
+			for (int j = 0; j < Engine.rooms[roomX][roomY].enemy.get(i).projectiles.size(); j++) {
+				Projectile p = Engine.rooms[roomX][roomY].enemy.get(i).projectiles.get(j);
+				if (collision(p.getX(), p.getX() + p.getImW(), p.getY(), p.getY() + p.getImH())) {
+					Engine.rooms[roomX][roomY].enemy.get(i).projectiles.remove(p);
+					if (shield <= 0) {
+						curH -= 1;
+					}
+					shield = 50;
+				}
+			}
+		}
+	}
+
+	public void miniMap(Graphics g) {
+		Color c = null;
+		int width = 15;
+		g.setColor(new Color(180,180,65));
+		g.fillRect(originX+66, originY+66, 111, 111);
+		for (int i = 0; i < Engine.rooms.length; i++) {
+			for (int j = 0; j < Engine.rooms.length; j++) {
+				if (i > roomX - 3 && i < roomX + 3 && j > roomY - 3 && j < roomY + 3) {
+					if (i == roomX && j == roomY) {
+						g.setColor(new Color(255, 255, 255));
+					} else if (Engine.rooms[i][j] instanceof basicRoom) {
+						g.setColor(new Color(0, 0, 0));
+					} else if (Engine.rooms[i][j] instanceof bossRoom) {
+						g.setColor(new Color(100, 100, 100));
+					} else if (Engine.rooms[i][j] instanceof upgradeRoom) {
+						g.setColor(new Color(255, 255, 0));
+					} else {
+						g.setColor(new Color(0, 0, 0, 0));
+					}
+					g.fillRect(originX + i * (width + 3), originY + j * (width + 3), width, width);
+				}
+			}
+		}
+	}
+
+	public void healthbar(Graphics g) {
+		for (int i = 0; i < maxH; i++) {
+			g.drawImage(Engine.heartd, 50 + i * 50, 10);
+		}
+		for (int i = 0; i < curH; i++) {
+			g.drawImage(Engine.heart, 50 + i * 50, 10);
+		}
+	}
+
+	public void borders() {
+		if (x < 75)
+			x = 75;
+		if (x + size > Engine.width - 75)
+			x = Engine.width - size - 75;
+		if (y < 75)
+			y = 75;
+		if (y + size > Engine.height - 75)
+			y = Engine.height - size - 75;
+	}
+
+	public void keys(GameContainer gc) {
+		Input input = gc.getInput();
+		if (input.isKeyDown(Input.KEY_W)) {
+			ySpeed = Math.max(-speedM, ySpeed - ACCEL);
+			directionM = "up";
+		} else {
+			if (ySpeed < 0) {
+				ySpeed += ACCEL;
+			}
+		}
+		if (input.isKeyDown(Input.KEY_S)) {
+			ySpeed = Math.min(speedM, ySpeed + ACCEL);
+			directionM = "down";
+		} else {
+			if (ySpeed > 0) {
+				ySpeed -= ACCEL;
+			}
+		}
+		if (input.isKeyDown(Input.KEY_A)) {
+			xSpeed = Math.max(-speedM, xSpeed - ACCEL);
+			directionM = "left";
+		} else {
+			if (xSpeed < 0) {
+				xSpeed += ACCEL;
+			}
+		}
+		if (input.isKeyDown(Input.KEY_D)) {
+			xSpeed = Math.min(speedM, xSpeed + ACCEL);
+			directionM = "right";
+		} else {
+			if (xSpeed > 0) {
+				xSpeed -= ACCEL;
+			}
+		}
+
+		if (input.isKeyDown(Input.KEY_UP) && shotTimer <= 0) {
+			direction = "up";
+			if (projR % 1 == 0 && upgrades.size() > 0) {
+				if (upgrades.get(ranP) instanceof ExplosProjU) {
+					projectiles.add(new ExplosProj(x + size / 2, y + size / 2, proW, proH, proxSpeed * 0,
+							proySpeed * -1, proDam, Engine.upgrade_ex));
+
+				}
+			} else {
+				projectiles.add(new BasicPlayerProjectile(x + size / 2, y + size / 2, proW, proH, proxSpeed * 0,
+						proySpeed * -1, proDam, Engine.fireball));
+			}
+			projR++;
+			shotTimer = shotDelay;
+		}
+		if (input.isKeyDown(Input.KEY_DOWN) && shotTimer <= 0) {
+			direction = "down";
+			if (projR % 1 == 0 && upgrades.size() > 0) {
+				if (upgrades.get(ranP) instanceof ExplosProjU) {
+					projectiles.add(new ExplosProj(x + size / 2, y + size / 2, proW, proH, proxSpeed * 0, proySpeed * 1,
+							proDam, Engine.upgrade_ex));
+				}
+			} else {
+				projectiles.add(new BasicPlayerProjectile(x + size / 2, y + size / 2, proW, proH, proxSpeed * 0,
+						proySpeed * 1, proDam, Engine.fireball));
+			}
+			shotTimer = shotDelay;
+			projR++;
+		}
+		if (input.isKeyDown(Input.KEY_LEFT) && shotTimer <= 0) {
+			direction = "left";
+			if (projR % 1 == 0 && upgrades.size() > 0) {
+				if (upgrades.get(ranP) instanceof ExplosProjU) {
+					projectiles.add(new ExplosProj(x + size / 2, y + size / 2, proW, proH, proxSpeed * -1,
+							proySpeed * 0, proDam, Engine.upgrade_ex));
+				}
+			} else {
+				projectiles.add(new BasicPlayerProjectile(x + size / 2, y + size / 2, proW, proH, proxSpeed * -1,
+						proySpeed * 0, proDam, Engine.fireball));
+			}
+			shotTimer = shotDelay;
+			projR++;
+		}
+		if (input.isKeyDown(Input.KEY_RIGHT) && shotTimer <= 0) {
+			direction = "right";
+			if (projR % 1 == 0 && upgrades.size() > 0) {
+				if (upgrades.get(ranP) instanceof ExplosProjU) {
+					projectiles.add(new ExplosProj(x + size / 2, y + size / 2, proW, proH, proxSpeed * 1, proySpeed * 0,
+							proDam, Engine.upgrade_ex));
+				}
+			} else {
+				projectiles.add(new BasicPlayerProjectile(x + size / 2, y + size / 2, proW, proH, proxSpeed * 1,
+						proySpeed * 0, proDam, Engine.fireball));
+			}
+			shotTimer = shotDelay;
+			projR++;
+		}
+	}
+
+	public double getShield() {
+		return shield;
+	}
+
+	public void setShield(double shield) {
+		this.shield = shield;
+	}
+
+	public void moveRoom(int x, int y) {
+		roomX += x;
+		roomY += y;
+	}
+
+	public int getRoomX() {
+		return roomX;
+	}
+
+	public int getRoomY() {
+		return roomY;
+	}
+
+	public String getDirection() {
+		return direction;
+	}
+
+	public void setDirection(String direction) {
+		this.direction = direction;
+	}
+
+	public float getCurH() {
+		return curH;
+	}
+
+	public void setCurH(float curH) {
+		this.curH = curH;
+	}
+
+	public float getMaxH() {
+		return maxH;
+	}
+
+	public void setMaxH(float maxH) {
+		this.maxH = maxH;
+	}
+
+	public String getDirectionM() {
+		return directionM;
+	}
+
+	public void setDirectionM(String directionM) {
+		this.directionM = directionM;
+	}
+
+	public int getOriginX() {
+		return originX;
+	}
+
+	public void setOriginX(int originX) {
+		this.originX = originX;
+	}
+
+	public int getOriginY() {
+		return originY;
+	}
+
+	public void setOriginY(int originY) {
+		this.originY = originY;
+	}
+
+}
