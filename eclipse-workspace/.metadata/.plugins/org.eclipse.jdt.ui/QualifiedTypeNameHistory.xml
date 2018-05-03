@@ -24,4 +24,6 @@
 <fullyQualifiedTypeName name="Engine"/>
 <fullyQualifiedTypeName name="PlayerProjectile.EnemyProjectile"/>
 <fullyQualifiedTypeName name="org.newdawn.slick.Color"/>
+<fullyQualifiedTypeName name="teams.s0.Fd.FdTeam"/>
+<fullyQualifiedTypeName name="java.util.Random"/>
 </qualifiedTypeNameHistroy>

@@ -19,7 +19,6 @@ import org.newdawn.slick.state.transition.FadeOutTransition;
 import files.Fonts;
 import files.Images;
 import objects.Team;
-import teams.s0.Fd.FdTeam;
 import teams.starter.approach.ApproachTeam;
 import teams.starter.wander.WanderTeam;
 import values.CoreValues;
@@ -56,7 +55,7 @@ public class Select extends BasicGameState {
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		this.sbg = sbg;
 
-		addTeam(FdTeam.class);
+		addTeam(ApproachTeam.class);
 		addTeam(WanderTeam.class);
 
 	}
