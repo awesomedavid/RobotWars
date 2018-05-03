@@ -11,16 +11,25 @@ import objects.Team;
 
 public class FdTeam extends Team {
 	Color myColor;
-
+	private int lol;
 	public FdTeam(int id) {
 		super(id);
+<<<<<<< HEAD
 		setName("Floppy");
 		myColor = new Color(0);
+=======
+		setName("Floppy Disk");
+		myColor = new Color(200,200,200);
+>>>>>>> 0f7a6562888682d431489e0fea2bd818e4f4597e
 	}
 
 	public Color getColor() {
 		return myColor;
+<<<<<<< HEAD
 		//return new Color((int) (Math.random() * 255),(int) (Math.random() * 255),(int) (Math.random() * 255));
+=======
+		
+>>>>>>> 0f7a6562888682d431489e0fea2bd818e4f4597e
 	}
 	
 //	@Override

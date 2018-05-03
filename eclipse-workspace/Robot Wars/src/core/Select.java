@@ -55,10 +55,15 @@ public class Select extends BasicGameState {
 
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		this.sbg = sbg;
+<<<<<<< HEAD
 
 		addTeam(FdTeam.class);
 		addTeam(WanderTeam.class);
 
+=======
+		addTeam(FdTeam.class);
+		addTeam(ApproachTeam.class);
+>>>>>>> 0f7a6562888682d431489e0fea2bd818e4f4597e
 	}
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
